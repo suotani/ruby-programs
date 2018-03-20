@@ -1,4 +1,39 @@
 # Gale-Shapleyアルゴリズム
+class Compa
+  attr_accessor :women, :mens
+  
+  def initialize(w, m)
+    @women = w
+    @mens = m
+  end
+
+  def print_result
+    women.each do |woman|
+      puts "#{woman.name} - #{woman.keep_man.name}"
+    end
+  end
+
+  def loop_algorism
+    while(!check_match(mens))
+      try_proposal(women, mens)
+    end
+  end
+
+  private
+
+  def check_match(mens)
+    mens.each do |man|
+      return false unless man.keeped
+    end
+    true
+  end
+
+  def try_proposal(women, mens)
+    mens.each do |man|
+      man.propose(women) unless man.keeped
+    end
+  end
+end
 
 class Woman
   attr_accessor :keep_man, :ranking, :name
@@ -43,10 +78,10 @@ class Man
     self.keeped = false
   end
 
-  def propose(weman)
+  def propose(women)
     ranking.each do |woman|
       next if bad_list.include?(woman)
-      target = weman.select{|w| w.name == woman }[0]
+      target = women.select{|w| w.name == woman }[0]
       result = target.judge(self)
       if result
         self.keeped = true
@@ -58,24 +93,11 @@ class Man
   end
 end
 
-def check_match(mens)
-  mens.each do |man|
-    return false unless man.keeped
-  end
-  true
-end
-
-def try_proposal(weman, mens)
-  mens.each do |man|
-    man.propose(weman) unless man.keeped
-  end
-end
-
 # create woman
-weman = []
-weman << Woman.new("a", ["x", "y", "z"])
-weman << Woman.new("b", ["y", "z", "x"])
-weman << Woman.new("c", ["x", "z", "y"])
+women = []
+women << Woman.new("a", ["x", "y", "z"])
+women << Woman.new("b", ["y", "z", "x"])
+women << Woman.new("c", ["x", "z", "y"])
 
 
 # create man
@@ -84,12 +106,6 @@ mens << Man.new("x", ["a", "b", "c"])
 mens << Man.new("y", ["c", "b", "a"])
 mens << Man.new("z", ["a", "b", "c"])
 
-while(!check_match(mens))
-  try_proposal(weman, mens)
-  mens.each do |men|
-  end
-end
-
-weman.each do |woman|
-  puts "#{woman.name} - #{woman.keep_man.name}"
-end
+compa = Compa.new(women, mens)
+compa.loop_algorism
+compa.print_result
